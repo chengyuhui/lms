@@ -95,7 +95,7 @@ Explore::Explore(Filters* filters)
 	artist->artistsAction.connect(this, &Explore::handleArtistsAction);
 	contentsStack->addWidget(std::move(artist));
 
-	auto releases = std::make_unique<Releases>(_filters);
+	auto releases = std::make_unique<Releases>(*_filters);
 	releases->releasesAction.connect(this, &Explore::handleReleasesAction);
 	contentsStack->addWidget(std::move(releases));
 

@@ -15,6 +15,7 @@ add_executable(lms
 	ui/admin/UserView.cpp
 	ui/admin/UsersView.cpp
 	ui/common/DirectoryValidator.cpp
+	ui/common/InfiniteScrollingContainer.cpp
 	ui/common/LoadingIndicator.cpp
 	ui/common/LoginNameValidator.cpp
 	ui/common/MandatoryValidator.cpp
@@ -23,8 +24,10 @@ add_executable(lms
 	ui/explore/ArtistListHelpers.cpp
 	ui/explore/ArtistView.cpp
 	ui/explore/ArtistsView.cpp
+	ui/explore/DatabaseCollectorBase.cpp
 	ui/explore/Explore.cpp
 	ui/explore/Filters.cpp
+	ui/explore/ReleaseCollector.cpp
 	ui/explore/ReleaseListHelpers.cpp
 	ui/explore/ReleasePopup.cpp
 	ui/explore/ReleasesView.cpp

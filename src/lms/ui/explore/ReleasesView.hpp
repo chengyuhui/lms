@@ -27,6 +27,7 @@
 
 #include "database/Types.hpp"
 #include "PlayQueueAction.hpp"
+#include "ReleaseCollector.hpp"
 
 namespace Database
 {
@@ -36,53 +37,39 @@ namespace Database
 namespace UserInterface {
 
 class Filters;
+class InfiniteScrollingContainer;
 
 class Releases : public Wt::WTemplate
 {
 	public:
-		Releases(Filters* filters);
+		Releases(Filters& filters);
 
 		PlayQueueActionSignal releasesAction;
 
 	private:
 
-		enum class Mode
-		{
-			Random,
-			Starred,
-			RecentlyPlayed,
-			RecentlyAdded,
-			MostPlayed,
-			All
-		};
-
 		void refreshView();
-		void refreshView(Mode mode);
-		void displayLoadingIndicator();
-		void hideLoadingIndicator();
+		void refreshView(ReleaseCollector::Mode mode);
 
 		void addSome();
-		std::vector<Wt::Dbo::ptr<Database::Release>> getReleases(std::optional<Database::Range> range, bool& moreResults);
-		std::vector<Wt::Dbo::ptr<Database::Release>> getRandomReleases(std::optional<Database::Range> range, bool& moreResults);
 		std::vector<Database::IdType> getAllReleases();
 
-		static constexpr Mode defaultMode {Mode::Random};
-		static constexpr std::size_t maxItemsPerLine {6};
-		static constexpr std::size_t batchSize {maxItemsPerLine * 3};
-		static inline std::unordered_map<Mode, std::optional<std::size_t>> maxItemsPerMode
+		static constexpr std::size_t _maxItemsPerLine {6};
+		static constexpr std::size_t _batchSize {_maxItemsPerLine * 3};
+		// TODO move?
+		static inline const std::unordered_map<ReleaseCollector::Mode, std::size_t> _maxItemsPerMode
 		{
-			{Mode::Random, batchSize * 10},
-			{Mode::RecentlyPlayed, batchSize * 10},
-			{Mode::RecentlyAdded, batchSize * 10},
-			{Mode::MostPlayed, batchSize * 10},
-			{Mode::All, batchSize * 30},
+			{ReleaseCollector::Mode::All, _batchSize * 30},
+			{ReleaseCollector::Mode::MostPlayed, _batchSize * 10},
+			{ReleaseCollector::Mode::Random, _batchSize * 10},
+			{ReleaseCollector::Mode::RecentlyAdded, _batchSize * 10},
+			{ReleaseCollector::Mode::RecentlyPlayed, _batchSize * 10},
+			{ReleaseCollector::Mode::Starred, _batchSize * 30},
 		};
 
-		Mode _mode {defaultMode};
-		Filters* _filters {};
-		std::vector<Database::IdType> _randomReleases;
-		Wt::WContainerWidget* _container {};
-		Wt::WTemplate* _loadingIndicator {};
+		InfiniteScrollingContainer* _container {};
+		ReleaseCollector			_releaseCollector;
+		static constexpr ReleaseCollector::Mode _defaultMode {ReleaseCollector::Mode::Random};
 };
 
 } // namespace UserInterface

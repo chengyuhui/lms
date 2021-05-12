@@ -22,34 +22,67 @@
 #include <string>
 #include <string_view>
 #include <vector>
+#include <unordered_map>
 
+#include <Wt/WContainerWidget.h>
+#include <Wt/WMenu.h>
 #include <Wt/WTemplate.h>
 
+#include "ReleaseCollector.hpp"
 #include "PlayQueueAction.hpp"
 
-namespace UserInterface {
-
-class Filters;
-
-class SearchView : public Wt::WTemplate
+namespace UserInterface
 {
-	public:
-		SearchView(Filters* filters);
 
-		PlayQueueActionSignal tracksAction;
+	class InfiniteScrollingContainer;
+	class Filters;
 
-		void refreshView(const Wt::WString& searchText);
+	class SearchView : public Wt::WTemplate
+	{
+		public:
+			SearchView(Filters* filters);
 
-	private:
-		void refreshView();
-		void searchArtists();
-		void searchReleases();
-		void searchTracks();
+			PlayQueueActionSignal tracksAction;
 
-		Filters* _filters {};
-		std::string _searchValue;
-		std::vector<std::string_view> _keywords;
-};
+			void refreshView(const Wt::WString& searchText);
+
+		private:
+
+			// same order as in the menu
+			enum class Mode
+			{
+				Release,
+				Artist,
+				Track,
+			};
+
+			std::size_t modeToIndex(Mode mode) const;
+			Wt::WMenuItem& getItemMenu(Mode mode) const;
+			InfiniteScrollingContainer& getResultContainer(Mode mode) const;
+
+			static constexpr Mode _defaultMode {Mode::Release};
+			static inline std::unordered_map<Mode, std::size_t> _batchSizes
+			{
+				{Mode::Artist, 32},
+				{Mode::Release, 18},
+				{Mode::Track, 16},
+			};
+			std::size_t getBatchSize(Mode mode) const;
+
+			void refreshView();
+			std::unique_ptr<Wt::WContainerWidget> createArtistResults();
+			void addSomeReleases();
+			std::unique_ptr<Wt::WContainerWidget> createTrackResults();
+
+			Filters* _filters {};
+			Wt::WMenu* _menu {};
+			ReleaseCollector _releaseCollector;
+
+			std::string _searchValue;
+			std::vector<std::string_view> _keywords;
+
+			std::vector<InfiniteScrollingContainer*> _results;
+	};
 
 } // namespace UserInterface
 
