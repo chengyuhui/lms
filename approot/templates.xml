@@ -61,4 +61,9 @@
 	<span class="sr-only">${tr:Lms.loading}</span>
 </message>
 
+<message id="Lms.infinite-scrolling-container">
+	${elements}
+	${loading-indicator class="Lms-horizontal-center Lms-loading-indicator"}
+</message>
+
 </messages>

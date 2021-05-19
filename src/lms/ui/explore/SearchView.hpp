@@ -28,6 +28,7 @@
 #include <Wt/WMenu.h>
 #include <Wt/WTemplate.h>
 
+#include "ArtistCollector.hpp"
 #include "ReleaseCollector.hpp"
 #include "PlayQueueAction.hpp"
 
@@ -70,13 +71,14 @@ namespace UserInterface
 			std::size_t getBatchSize(Mode mode) const;
 
 			void refreshView();
-			std::unique_ptr<Wt::WContainerWidget> createArtistResults();
 			void addSomeReleases();
+			void addSomeArtists();
 			std::unique_ptr<Wt::WContainerWidget> createTrackResults();
 
 			Filters* _filters {};
 			Wt::WMenu* _menu {};
 			ReleaseCollector _releaseCollector;
+			ArtistCollector _artistCollector;
 
 			std::string _searchValue;
 			std::vector<std::string_view> _keywords;

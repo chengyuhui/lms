@@ -19,69 +19,47 @@
 
 #pragma once
 
-#include <memory>
+#include <optional>
 #include <unordered_map>
-#include <vector>
 
 #include <Wt/WComboBox.h>
-#include <Wt/WContainerWidget.h>
 #include <Wt/WTemplate.h>
 
 #include "database/Types.hpp"
-
-namespace Database
-{
-	class Artist;
-}
+#include "ArtistCollector.hpp"
 
 namespace UserInterface {
 
-class Filters;
+	class Filters;
+	class InfiniteScrollingContainer;
 
-class Artists : public Wt::WTemplate
-{
-	public:
-		Artists(Filters* filters);
+	class Artists : public Wt::WTemplate
+	{
+		public:
+			Artists(Filters& filters);
 
-	private:
-		enum class Mode
-		{
-			Random,
-			Starred,
-			RecentlyPlayed,
-			RecentlyAdded,
-			MostPlayed,
-			All
-		};
+		private:
+			void refreshView();
+			void refreshView(ArtistCollector::Mode mode);
+			void refreshView(std::optional<Database::TrackArtistLinkType> linkType);
+			void refreshArtistLinkTypes();
+			void addSome();
 
-		void refreshView();
-		void refreshView(Mode mode);
-		void refreshArtistLinkTypes();
-		void displayLoadingIndicator();
-		void hideLoadingIndicator();
-		void addSome();
+			static constexpr std::size_t _batchSize {30};
+			static inline std::unordered_map<ArtistCollector::Mode, std::size_t> _maxItemsPerMode
+			{
+				{ArtistCollector::Mode::Random, _batchSize * 4},
+				{ArtistCollector::Mode::RecentlyPlayed, _batchSize * 4},
+				{ArtistCollector::Mode::RecentlyAdded, _batchSize * 4},
+				{ArtistCollector::Mode::MostPlayed, _batchSize * 4},
+				{ArtistCollector::Mode::All, _batchSize * 50},
+			};
 
-		std::vector<Wt::Dbo::ptr<Database::Artist>> getArtists(std::optional<Database::Range> range, bool& moreResults);
-		std::vector<Wt::Dbo::ptr<Database::Artist>> getRandomArtists(std::optional<Database::Range> range, bool& moreResults);
-
-		static constexpr Mode defaultMode {Mode::Random};
-		static constexpr std::size_t batchSize {30};
-		static inline std::unordered_map<Mode, std::optional<std::size_t>> maxItemsPerMode
-		{
-			{Mode::Random, batchSize * 4},
-			{Mode::RecentlyPlayed, batchSize * 4},
-			{Mode::RecentlyAdded, batchSize * 4},
-			{Mode::MostPlayed, batchSize * 4},
-			{Mode::All, batchSize * 50},
-		};
-
-		Mode _mode {defaultMode};
-		std::vector<Database::IdType> _randomArtists;
-		Filters* _filters {};
-		Wt::WTemplate* _loadingIndicator {};
-		Wt::WContainerWidget* _container {};
-		Wt::WComboBox* _linkType {};
-};
+			InfiniteScrollingContainer* _container {};
+			ArtistCollector				_artistCollector;
+			Wt::WComboBox*				_linkType {};
+			static constexpr ArtistCollector::Mode _defaultMode {ArtistCollector::Mode::Random};
+	};
 
 } // namespace UserInterface
 

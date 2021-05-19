@@ -19,6 +19,8 @@
 
 #include "DatabaseCollectorBase.hpp"
 
+#include "utils/String.hpp"
+
 namespace UserInterface
 {
 	DatabaseCollectorBase::DatabaseCollectorBase(Filters& filters, Mode defaultMode)
@@ -51,6 +53,13 @@ namespace UserInterface
 		}
 
 		return res;
+	}
+
+	void
+	DatabaseCollectorBase::setSearch(std::string_view searchText)
+	{
+		_searchText = searchText;
+		_searchKeywords = StringUtils::splitString(_searchText, " ");
 	}
 
 } // ns UserInterface

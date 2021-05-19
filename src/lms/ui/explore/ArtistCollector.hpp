@@ -19,32 +19,33 @@
 
 #pragma once
 
-#include <Wt/WContainerWidget.h>
-#include <Wt/WSignal.h>
-#include <Wt/WString.h>
-#include <Wt/WTemplate.h>
+#include <optional>
+#include <vector>
+
+#include "DatabaseCollectorBase.hpp"
+
+#include "database/Types.hpp"
+
+namespace Database
+{
+	class Artist;
+}
 
 namespace UserInterface
 {
-	class InfiniteScrollingContainer : public Wt::WTemplate
+	class ArtistCollector : public DatabaseCollectorBase
 	{
 		public:
-			// "text" must contain loading-indicator and "elements"
-			InfiniteScrollingContainer(const Wt::WString& text = Wt::WString::tr("Lms.infinite-scrolling-container"));
+			using DatabaseCollectorBase::DatabaseCollectorBase;
 
-			void clear();
-			std::size_t getCount();
-			void add(std::unique_ptr<Wt::WWidget> result);
-
-			void setHasMore(bool hasMore);
-
-			Wt::Signal<>	onRequestElements;
+			std::vector<Wt::Dbo::ptr<Database::Artist>>		get(std::optional<Database::Range> range, bool& moreResults);
+			void reset() { _randomArtists.clear(); }
+			void setArtistLinkType(std::optional<Database::TrackArtistLinkType> linkType) { _linkType = linkType; }
 
 		private:
-			void displayLoadingIndicator();
-			void hideLoadingIndicator();
-
-			Wt::WContainerWidget*	_elements;
-			Wt::WTemplate*			_loadingIndicator;
+			std::vector<Wt::Dbo::ptr<Database::Artist>> getRandomArtists(std::optional<Range> range, bool& moreResults);
+			std::vector<Database::IdType> _randomArtists;
+			std::optional<Database::TrackArtistLinkType> _linkType;
 	};
-}
+} // ns UserInterface
+

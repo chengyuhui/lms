@@ -24,7 +24,6 @@
 #include <Wt/WText.h>
 
 #include "database/Session.hpp"
-
 #include "common/InfiniteScrollingContainer.hpp"
 #include "ReleaseListHelpers.hpp"
 #include "Filters.hpp"
@@ -121,7 +120,7 @@ Releases::addSome()
 	{
 		auto transaction {LmsApp->getDbSession().createSharedTransaction()};
 
-		const auto releases {_releaseCollector.get(Range {static_cast<std::size_t>(_container->getCount()), _batchSize}, {} /*keywords*/, moreResults)};
+		const auto releases {_releaseCollector.get(Range {static_cast<std::size_t>(_container->getCount()), _batchSize}, moreResults)};
 		for (const auto& release : releases)
 			_container->add(ReleaseListHelpers::createEntry(release));
 	}

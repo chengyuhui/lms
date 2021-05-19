@@ -35,7 +35,7 @@ namespace UserInterface
 		public:
 			using DatabaseCollectorBase::DatabaseCollectorBase;
 
-			std::vector<Wt::Dbo::ptr<Database::Release>>	get(std::optional<Database::Range> range, const std::vector<std::string_view>& keywords, bool& moreResults);
+			std::vector<Wt::Dbo::ptr<Database::Release>>	get(std::optional<Database::Range> range, bool& moreResults);
 			std::vector<Database::IdType>					getAll();
 			void reset() { _randomReleases.clear(); }
 

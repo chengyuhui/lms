@@ -34,7 +34,7 @@ namespace UserInterface
 	using namespace Database;
 
 	std::vector<Release::pointer>
-	ReleaseCollector::get(std::optional<Database::Range> range, const std::vector<std::string_view>& keywords, bool& moreResults)
+	ReleaseCollector::get(std::optional<Database::Range> range, bool& moreResults)
 	{
 		range = getActualRange(range);
 
@@ -62,7 +62,7 @@ namespace UserInterface
 				break;
 
 			case Mode::Search:
-				releases = Release::getByFilter(LmsApp->getDbSession(), getFilters().getClusterIds(), keywords, range, moreResults);
+				releases = Release::getByFilter(LmsApp->getDbSession(), getFilters().getClusterIds(), getSearchKeywords(), range, moreResults);
 				break;
 
 			case Mode::All:
@@ -76,12 +76,11 @@ namespace UserInterface
 		return releases;
 	}
 
-	// getAll
 	std::vector<Database::IdType>
 	ReleaseCollector::getAll()
 	{
 		bool moreResults;
-		const auto releases {get(std::nullopt, {} /*keywords*/, moreResults)};
+		const auto releases {get(std::nullopt, moreResults)};
 
 		std::vector<IdType> res;
 		res.reserve(releases.size());
